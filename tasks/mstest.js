@@ -24,7 +24,8 @@ module.exports = function(grunt) {
         var options = this.options({
             mstestPath: getExePath(),
             details:["errormessage","errorstacktrace"],
-            force:false
+            force:false,
+            resultsfile: ''
         });
 
         function gruntWarn(str){
@@ -38,6 +39,9 @@ module.exports = function(grunt) {
         var containerString = this.filesSrc.map(function(filePath){
             return "/testcontainer:"+filePath;
         }).join(" ");
+
+        if (!options.resultsfile && options.resultsfile !== "")
+          containerString += " /resultsfile:" + options.resultsfile;
 
         for (var i = options.details.length - 1; i >= 0; i--) {
             containerString += " /detail:"+options.details[i]
@@ -90,5 +94,3 @@ module.exports = function(grunt) {
       return '"'+cmd+'"';
     };
 };
-
-
