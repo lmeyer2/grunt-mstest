@@ -53,7 +53,6 @@ module.exports = function(grunt) {
       default_options: {
         src: ['tmp/*.dll'],
 		options: {
-			force: true,
 			resultsfile: 'C:/temp.trx'
 		}
       },

@@ -7,7 +7,7 @@
 */
 
 'use strict';
-var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 var path = require('path');
 var fs = require('fs');
 
@@ -29,40 +29,43 @@ module.exports = function(grunt) {
         });
 
         function gruntWarn(str){
-            if(options.force) {
+            if(options.force)
+			{
                 grunt.log.writeln(str);
 			}
-            else {
-                grunt.fail.warn(str);
+            else
+            {
+				grunt.fail.warn(str);
 			}
         }
 
+        var args = [];
+
         // Iterate over all specified file groups.
-        var containerString = this.filesSrc.map(function(filePath){
-            return "/testcontainer:"+filePath;
-        }).join(" ");
+        this.filesSrc.map(function(filePath){
+            args.push("/testcontainer:"+filePath);
+        });
 
 		if (options.resultsfile && options.resultsfile !== "")
 		{
-          containerString += " /resultsfile:" + options.resultsfile;
+			args.push("/resultsfile:" + options.resultsfile);
 		}
 		
         for (var i = options.details.length - 1; i >= 0; i--) {
-            containerString += " /detail:"+options.details[i];
+            args.push("/detail:"+options.details[i]);
         }
 
-        containerString +=" /usestderr";
+        args.push("/usestderr");
 
-        var child = exec(escapeShell(options.mstestPath) +containerString ,function (error, stdout, stderr) {
-            grunt.log.writeln(stdout);
+        var process = spawn(options.mstestPath,args);
 
-            if(!stderr && stderr !== ""){
-                gruntWarn("stderr:\""+stderr+"\"",3);
+        process.stdout.on('data', function(data) { grunt.log.write(data); });
+        process.stderr.on('data', function(data) { grunt.log.error(data); });
+
+        process.on('exit', function(code) {
+            if (code !== 0) {
+                gruntWarn('Some tests have failed');
             }
-            if (error !== null) {
-                gruntWarn(error,3);
-            }
-
             done();
         });
     });
@@ -99,4 +102,4 @@ module.exports = function(grunt) {
     function escapeShell(cmd) {
       return '"'+cmd+'"';
     }
-};
+    };
