@@ -29,10 +29,12 @@ module.exports = function(grunt) {
         });
 
         function gruntWarn(str){
-            if(options.force)
+            if(options.force) {
                 grunt.log.writeln(str);
-            else
+			}
+            else {
                 grunt.fail.warn(str);
+			}
         }
 
         // Iterate over all specified file groups.
@@ -40,12 +42,14 @@ module.exports = function(grunt) {
             return "/testcontainer:"+filePath;
         }).join(" ");
 
-        if (!options.resultsfile && options.resultsfile !== "")
+		if (options.resultsfile && options.resultsfile !== "")
+		{
           containerString += " /resultsfile:" + options.resultsfile;
-
+		}
+		
         for (var i = options.details.length - 1; i >= 0; i--) {
-            containerString += " /detail:"+options.details[i]
-        };
+            containerString += " /detail:"+options.details[i];
+        }
 
         containerString +=" /usestderr";
 
@@ -66,20 +70,22 @@ module.exports = function(grunt) {
 
     function getExePath() {
         //Possible env variables for visual studio tools, in reverse order of priority
-        var vsToolsArr = [process.env.VS100COMNTOOLS,process.env.VS110COMNTOOLS,process.env.VS120COMNTOOLS]
+        var vsToolsArr = [process.env.VS100COMNTOOLS,process.env.VS110COMNTOOLS,process.env.VS120COMNTOOLS];
 
         //Get highest priority VS tools
         var vsTools = null;
         for (var i = vsToolsArr.length - 1; i >= 0; i--) {
-            var item = vsToolsArr[i]
-            if(item && item != ""){
+            var item = vsToolsArr[i];
+            if(item && item !== ""){
                 vsTools = item;
                 break;
             }
-        };
+        }
 
         if(!vsTools)
-            grunt.fatal("Visual studio tools not installed")
+		{
+            grunt.fatal("Visual studio tools not installed");
+		}
 
         var exePath = path.join(vsTools, "../IDE", 'MSTest.exe');
 
@@ -92,5 +98,5 @@ module.exports = function(grunt) {
 
     function escapeShell(cmd) {
       return '"'+cmd+'"';
-    };
+    }
 };

@@ -51,9 +51,11 @@ module.exports = function(grunt) {
     // Configuration to be run (and then tested).
     mstest: {
       default_options: {
-        options: {
-        },
-        src: ['tmp/*.dll']
+        src: ['tmp/*.dll'],
+		options: {
+			force: true,
+			resultsfile: 'C:/temp.trx'
+		}
       },
       // custom_options: {
       //   options: {
